@@ -1,4 +1,10 @@
-# TODO:
+"""
+Script for performing churn analysis and model training.
+
+Author: Thomas
+Date created: 2026-09-17
+"""
+# DONE:
 # Add a module-level docstring describing:
 # - Purpose of this file
 # - Author
@@ -11,9 +17,9 @@ os.environ["QT_QPA_PLATFORM"] = "offscreen"
 # TODO: add required imports
 # Example:
 # import joblib
-# import pandas as pd
-# import matplotlib.pyplot as plt
-# import seaborn as sns
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 # from sklearn.model_selection import train_test_split
 # from sklearn.metrics import classification_report, RocCurveDisplay
 # from sklearn.linear_model import LogisticRegression
@@ -48,11 +54,10 @@ def import_data(pth):
     output:
             df: pandas dataframe
     """
-    # TODO: implement
+    # DONE: implement
     # Hint:
-    # df = pd.read_csv(pth)
-    # return df
-    pass
+    df = pd.read_csv(pth)
+    return df
 
 
 def perform_eda(df):
@@ -66,13 +71,35 @@ def perform_eda(df):
     """
     create_output_directories()
 
-    # TODO: implement
+    # DONE: implement
     # Suggested steps:
     # 1. Create a binary churn column if needed
+    df['Churn'] = df['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
+
     # 2. Plot key distributions
+    fig_1 = plt.figure(figsize=(20,10)) 
+    df['Churn'].hist()
+
+    fig_2 = plt.figure(figsize=(20,10)) 
+    df['Customer_Age'].hist()
+
+    fig_3 = plt.figure(figsize=(20,10)) 
+    df.Marital_Status.value_counts('normalize').plot(kind='bar')
+
+    fig_4 = plt.figure(figsize=(20,10)) 
+    sns.histplot(df['Total_Trans_Ct'], stat='density', kde=True)
+
     # 3. Plot a correlation heatmap
+    fig_5 = plt.figure(figsize=(20, 10))
+    corr = df.select_dtypes(include='number').corr()
+    sns.heatmap(corr, annot=False, cmap='Dark2_r', linewidths=2)
+
     # 4. Save figures into EDA_DIR
-    pass
+    fig_1.savefig(os.path.join(EDA_DIR, 'churn_distribution.png'))
+    fig_2.savefig(os.path.join(EDA_DIR, 'customer_age_distribution.png'))
+    fig_3.savefig(os.path.join(EDA_DIR, 'marital_status_distribution.png'))
+    fig_4.savefig(os.path.join(EDA_DIR, 'total_trans_ct_distribution.png'))
+    fig_5.savefig(os.path.join(EDA_DIR, 'correlation_heatmap.png'))
 
 
 def encoder_helper(df, category_lst, response):
@@ -161,7 +188,7 @@ if __name__ == "__main__":
 
     perform_eda(df)
 
-    category_columns = [
+    """category_columns = [
         "Gender",
         "Education_Level",
         "Marital_Status",
@@ -171,4 +198,4 @@ if __name__ == "__main__":
 
     df = encoder_helper(df, category_columns, "Churn")
     x_train, x_test, y_train, y_test = perform_feature_engineering(df, "Churn")
-    train_models(x_train, x_test, y_train, y_test)
+    train_models(x_train, x_test, y_train, y_test)"""
