@@ -20,7 +20,7 @@ os.environ["QT_QPA_PLATFORM"] = "offscreen"
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-# from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split
 # from sklearn.metrics import classification_report, RocCurveDisplay
 # from sklearn.linear_model import LogisticRegression
 # from sklearn.ensemble import RandomForestClassifier
@@ -113,8 +113,16 @@ def encoder_helper(df, category_lst, response):
     output:
             df: updated dataframe
     """
-    # TODO: implement
-    pass
+    # DONE: implement
+    for category in category_lst:
+        # Create a new column for the encoded feature
+        new_col_name = f"{category}_{response}"
+        # Calculate the mean of the response for each category
+        category_means = df.groupby(category)[response].mean()
+        # Map the means to the original dataframe
+        df[new_col_name] = df[category].map(category_means)
+
+    return df
 
 
 def perform_feature_engineering(df, response):
@@ -127,8 +135,24 @@ def perform_feature_engineering(df, response):
     output:
               x_train, x_test, y_train, y_test
     """
-    # TODO: implement
-    pass
+    # DONE: implement
+    y = df[response]
+
+    X = pd.DataFrame()
+    keep_cols = [
+        'Customer_Age', 'Dependent_count', 'Months_on_book',
+        'Total_Relationship_Count', 'Months_Inactive_12_mon',
+        'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal',
+        'Avg_Open_To_Buy', 'Total_Amt_Chng_Q4_Q1', 'Total_Trans_Amt',
+        'Total_Trans_Ct', 'Total_Ct_Chng_Q4_Q1', 'Avg_Utilization_Ratio',
+        'Gender_Churn', 'Education_Level_Churn', 'Marital_Status_Churn', 
+        'Income_Category_Churn', 'Card_Category_Churn'
+    ]
+    X[keep_cols] = df[keep_cols]
+
+    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+    return x_train, x_test, y_train, y_test
 
 
 def classification_report_image(
@@ -188,7 +212,7 @@ if __name__ == "__main__":
 
     perform_eda(df)
 
-    """category_columns = [
+    category_columns = [
         "Gender",
         "Education_Level",
         "Marital_Status",
@@ -198,4 +222,4 @@ if __name__ == "__main__":
 
     df = encoder_helper(df, category_columns, "Churn")
     x_train, x_test, y_train, y_test = perform_feature_engineering(df, "Churn")
-    train_models(x_train, x_test, y_train, y_test)"""
+    train_models(x_train, x_test, y_train, y_test)
