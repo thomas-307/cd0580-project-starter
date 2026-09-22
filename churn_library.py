@@ -20,10 +20,12 @@ os.environ["QT_QPA_PLATFORM"] = "offscreen"
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split
-# from sklearn.metrics import classification_report, RocCurveDisplay
-# from sklearn.linear_model import LogisticRegression
-# from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
+from sklearn.metrics import classification_report, RocCurveDisplay
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 EDA_DIR = "./images/eda"
 RESULTS_DIR = "./images/results"
@@ -202,7 +204,57 @@ def train_models(x_train, x_test, y_train, y_test):
     create_output_directories()
 
     # TODO: implement
-    pass
+    # Setup Random Forest Classifier and hyperparameter grid for RandomizedSearchCV
+    rfc = RandomForestClassifier(random_state=42)
+    
+    param_dist = {
+        'n_estimators': [200, 300],
+        'max_features': ['sqrt'],
+        'max_depth': [5, 8, 10],
+        'min_samples_split': [5, 10],
+        'min_samples_leaf': [2, 4],
+        'criterion': ['gini']
+    }
+
+    cv_rfc = RandomizedSearchCV(
+        estimator=rfc,
+        param_distributions=param_dist,
+        n_iter=12,
+        cv=3,
+        random_state=42,
+        n_jobs=-1,
+        error_score='raise'
+    )
+
+    # Setup Logistic Regression pipeline
+    lrc = Pipeline([
+        ('scaler', StandardScaler()),
+        ('model', LogisticRegression(max_iter=3000))
+    ])
+
+    # Train models
+    cv_rfc.fit(x_train, y_train)
+    lrc.fit(x_train, y_train)
+
+    # Calculate predictions
+    y_train_preds_rf = cv_rfc.best_estimator_.predict(x_train)
+    y_test_preds_rf = cv_rfc.best_estimator_.predict(x_test)
+
+    y_train_preds_lr = lrc.predict(x_train)
+    y_test_preds_lr = lrc.predict(x_test)
+
+    # Print scores
+    print('random forest results')
+    print('test results')
+    print(classification_report(y_test, y_test_preds_rf))
+    print('train results')
+    print(classification_report(y_train, y_train_preds_rf))
+
+    print('logistic regression results')
+    print('test results')
+    print(classification_report(y_test, y_test_preds_lr))
+    print('train results')
+    print(classification_report(y_train, y_train_preds_lr))
 
 
 if __name__ == "__main__":
