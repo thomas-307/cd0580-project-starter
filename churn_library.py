@@ -14,14 +14,13 @@ import os
 
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
-# TODO: add required imports
-# Example:
-# import joblib
+# DONE: add required imports
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
-from sklearn.metrics import classification_report, RocCurveDisplay
+from sklearn.metrics import classification_report
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
@@ -161,8 +160,8 @@ def classification_report_image(
     y_train,
     y_test,
     y_train_preds_lr,
-    y_train_preds_rf,
     y_test_preds_lr,
+    y_train_preds_rf,
     y_test_preds_rf,
 ):
     """
@@ -175,8 +174,26 @@ def classification_report_image(
     """
     create_output_directories()
 
-    # TODO: implement
-    pass
+    # DONE: implement
+    # Classification report for Random Forest
+    plt.rc('figure', figsize=(5, 5))
+    plt.text(0.01, 1.25, str('Random Forest Train'), {'fontsize': 10}, fontproperties = 'monospace')
+    plt.text(0.01, 0.05, str(classification_report(y_train, y_train_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.text(0.01, 0.6, str('Random Forest Test'), {'fontsize': 10}, fontproperties = 'monospace')
+    plt.text(0.01, 0.7, str(classification_report(y_test, y_test_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.axis('off')
+    plt.savefig(os.path.join(RESULTS_DIR, 'classification_report_rf.png'))
+    plt.close()
+
+    # Classification report for Logistic Regression
+    plt.rc('figure', figsize=(5, 5))
+    plt.text(0.01, 1.25, str('Logistic Regression Train'), {'fontsize': 10}, fontproperties = 'monospace')
+    plt.text(0.01, 0.05, str(classification_report(y_train, y_train_preds_lr)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.text(0.01, 0.6, str('Logistic Regression Test'), {'fontsize': 10}, fontproperties = 'monospace')
+    plt.text(0.01, 0.7, str(classification_report(y_test, y_test_preds_lr)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.axis('off')
+    plt.savefig(os.path.join(RESULTS_DIR, 'classification_report_lr.png'))
+    plt.close()
 
 
 def feature_importance_plot(model, x_data, output_pth):
@@ -188,8 +205,29 @@ def feature_importance_plot(model, x_data, output_pth):
     output:
             None
     """
-    # TODO: implement
-    pass
+    # DONE: implement
+    # Calculate feature importances
+    importances = model.best_estimator_.feature_importances_
+    # Sort feature importances in descending order
+    indices = np.argsort(importances)[::-1]
+
+    # Rearrange feature names so they match the sorted feature importances
+    names = [x_data.columns[i] for i in indices]
+
+    # Create plot
+    plt.figure(figsize=(20,5))
+
+    # Create plot title
+    plt.title("Feature Importance")
+    plt.ylabel('Importance')
+
+    # Add bars
+    plt.bar(range(x_data.shape[1]), importances[indices])
+
+    # Add feature names as x-axis labels
+    plt.xticks(range(x_data.shape[1]), names, rotation=45, ha='right')
+    plt.savefig(output_pth)
+    plt.close()
 
 
 def train_models(x_train, x_test, y_train, y_test):
@@ -255,6 +293,16 @@ def train_models(x_train, x_test, y_train, y_test):
     print(classification_report(y_test, y_test_preds_lr))
     print('train results')
     print(classification_report(y_train, y_train_preds_lr))
+
+    # Save classification reports as images
+    classification_report_image(
+        y_train, y_test,
+        y_train_preds_rf, y_test_preds_rf,
+        y_train_preds_lr, y_test_preds_lr
+    )
+
+    # Save feature importance plot
+    feature_importance_plot(cv_rfc, x_train, os.path.join(RESULTS_DIR, 'feature_importance.png'))
 
 
 if __name__ == "__main__":
