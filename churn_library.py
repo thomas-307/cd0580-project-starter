@@ -78,29 +78,35 @@ def perform_eda(df):
     df['Churn'] = df['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
 
     # 2. Plot key distributions
-    fig_1 = plt.figure(figsize=(20,10)) 
+    plt.figure(figsize=(20,10)) 
     df['Churn'].hist()
+    plt.savefig(os.path.join(EDA_DIR, 'churn_distribution.png'))
+    plt.close()
 
-    fig_2 = plt.figure(figsize=(20,10)) 
+    plt.figure(figsize=(20,10)) 
     df['Customer_Age'].hist()
+    plt.savefig(os.path.join(EDA_DIR, 'customer_age_distribution.png'))
+    plt.close()
 
-    fig_3 = plt.figure(figsize=(20,10)) 
+    plt.figure(figsize=(20,10)) 
     df.Marital_Status.value_counts('normalize').plot(kind='bar')
+    plt.savefig(os.path.join(EDA_DIR, 'marital_status_distribution.png'))
+    plt.close()
 
-    fig_4 = plt.figure(figsize=(20,10)) 
+    plt.figure(figsize=(20,10)) 
     sns.histplot(df['Total_Trans_Ct'], stat='density', kde=True)
+    plt.savefig(os.path.join(EDA_DIR, 'total_trans_ct_distribution.png'))
+    plt.close()
 
     # 3. Plot a correlation heatmap
-    fig_5 = plt.figure(figsize=(20, 10))
+    plt.figure(figsize=(20, 10))
     corr = df.select_dtypes(include='number').corr()
     sns.heatmap(corr, annot=False, cmap='Dark2_r', linewidths=2)
+    plt.savefig(os.path.join(EDA_DIR, 'correlation_heatmap.png'))
+    plt.close()
 
     # 4. Save figures into EDA_DIR
-    fig_1.savefig(os.path.join(EDA_DIR, 'churn_distribution.png'))
-    fig_2.savefig(os.path.join(EDA_DIR, 'customer_age_distribution.png'))
-    fig_3.savefig(os.path.join(EDA_DIR, 'marital_status_distribution.png'))
-    fig_4.savefig(os.path.join(EDA_DIR, 'total_trans_ct_distribution.png'))
-    fig_5.savefig(os.path.join(EDA_DIR, 'correlation_heatmap.png'))
+    # Removed redundant saving of figures since they are already saved above
 
 
 def encoder_helper(df, category_lst, response):
@@ -159,10 +165,10 @@ def perform_feature_engineering(df, response):
 def classification_report_image(
     y_train,
     y_test,
-    y_train_preds_lr,
-    y_test_preds_lr,
     y_train_preds_rf,
     y_test_preds_rf,
+    y_train_preds_lr,
+    y_test_preds_lr
 ):
     """
     Save classification reports as images.
@@ -177,20 +183,20 @@ def classification_report_image(
     # DONE: implement
     # Classification report for Random Forest
     plt.rc('figure', figsize=(5, 5))
-    plt.text(0.01, 1.25, str('Random Forest Train'), {'fontsize': 10}, fontproperties = 'monospace')
-    plt.text(0.01, 0.05, str(classification_report(y_train, y_train_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
-    plt.text(0.01, 0.6, str('Random Forest Test'), {'fontsize': 10}, fontproperties = 'monospace')
-    plt.text(0.01, 0.7, str(classification_report(y_test, y_test_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.text(0.01, 1.0, str('Random Forest Train'), {'fontsize': 10}, fontproperties = 'monospace')
+    plt.text(0.01, 0.6, str(classification_report(y_train, y_train_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.text(0.01, 0.5, str('Random Forest Test'), {'fontsize': 10}, fontproperties = 'monospace')
+    plt.text(0.01, 0.1, str(classification_report(y_test, y_test_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
     plt.axis('off')
     plt.savefig(os.path.join(RESULTS_DIR, 'classification_report_rf.png'))
     plt.close()
 
     # Classification report for Logistic Regression
     plt.rc('figure', figsize=(5, 5))
-    plt.text(0.01, 1.25, str('Logistic Regression Train'), {'fontsize': 10}, fontproperties = 'monospace')
-    plt.text(0.01, 0.05, str(classification_report(y_train, y_train_preds_lr)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
-    plt.text(0.01, 0.6, str('Logistic Regression Test'), {'fontsize': 10}, fontproperties = 'monospace')
-    plt.text(0.01, 0.7, str(classification_report(y_test, y_test_preds_lr)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.text(0.01, 1.0, str('Logistic Regression Train'), {'fontsize': 10}, fontproperties = 'monospace')
+    plt.text(0.01, 0.6, str(classification_report(y_train, y_train_preds_lr)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.text(0.01, 0.5, str('Logistic Regression Test'), {'fontsize': 10}, fontproperties = 'monospace')
+    plt.text(0.01, 0.1, str(classification_report(y_test, y_test_preds_lr)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
     plt.axis('off')
     plt.savefig(os.path.join(RESULTS_DIR, 'classification_report_lr.png'))
     plt.close()
