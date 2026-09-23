@@ -132,13 +132,15 @@ def encoder_helper(df, category_lst, response):
     return df
 
 
-def perform_feature_engineering(df, response):
+def perform_feature_engineering(df, response, category_cols, quant_cols):
     """
     Split dataset into train and test sets.
 
     input:
               df: pandas dataframe
               response: response column name
+              category_cols: list of categorical columns
+              quant_cols: list of quantitative columns
     output:
               x_train, x_test, y_train, y_test
     """
@@ -146,15 +148,8 @@ def perform_feature_engineering(df, response):
     y = df[response]
 
     X = pd.DataFrame()
-    keep_cols = [
-        'Customer_Age', 'Dependent_count', 'Months_on_book',
-        'Total_Relationship_Count', 'Months_Inactive_12_mon',
-        'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal',
-        'Avg_Open_To_Buy', 'Total_Amt_Chng_Q4_Q1', 'Total_Trans_Amt',
-        'Total_Trans_Ct', 'Total_Ct_Chng_Q4_Q1', 'Avg_Utilization_Ratio',
-        'Gender_Churn', 'Education_Level_Churn', 'Marital_Status_Churn', 
-        'Income_Category_Churn', 'Card_Category_Churn'
-    ]
+    encoded_cols = [f"{col}_{response}" for col in category_cols]
+    keep_cols = quant_cols + encoded_cols
     X[keep_cols] = df[keep_cols]
 
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
@@ -325,7 +320,23 @@ if __name__ == "__main__":
         "Income_Category",
         "Card_Category",
     ]
+    quant_columns = [
+        'Customer_Age',
+        'Dependent_count', 
+        'Months_on_book',
+        'Total_Relationship_Count', 
+        'Months_Inactive_12_mon',
+        'Contacts_Count_12_mon', 
+        'Credit_Limit', 
+        'Total_Revolving_Bal',
+        'Avg_Open_To_Buy', 
+        'Total_Amt_Chng_Q4_Q1', 
+        'Total_Trans_Amt',
+        'Total_Trans_Ct', 
+        'Total_Ct_Chng_Q4_Q1', 
+        'Avg_Utilization_Ratio'
+    ]
 
     df = encoder_helper(df, category_columns, "Churn")
-    x_train, x_test, y_train, y_test = perform_feature_engineering(df, "Churn")
+    x_train, x_test, y_train, y_test = perform_feature_engineering(df, "Churn", category_columns, quant_columns)
     train_models(x_train, x_test, y_train, y_test)
