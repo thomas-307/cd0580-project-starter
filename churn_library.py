@@ -158,12 +158,12 @@ def perform_feature_engineering(df, response, category_cols, quant_cols):
 
 
 def classification_report_image(
+    model_name,
     y_train,
     y_test,
-    y_train_preds_rf,
-    y_test_preds_rf,
-    y_train_preds_lr,
-    y_test_preds_lr
+    y_train_preds,
+    y_test_preds,
+    output_pth
 ):
     """
     Save classification reports as images.
@@ -178,22 +178,12 @@ def classification_report_image(
     # DONE: implement
     # Classification report for Random Forest
     plt.rc('figure', figsize=(5, 5))
-    plt.text(0.01, 1.0, str('Random Forest Train'), {'fontsize': 10}, fontproperties = 'monospace')
-    plt.text(0.01, 0.6, str(classification_report(y_train, y_train_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
-    plt.text(0.01, 0.5, str('Random Forest Test'), {'fontsize': 10}, fontproperties = 'monospace')
-    plt.text(0.01, 0.1, str(classification_report(y_test, y_test_preds_rf)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.text(0.01, 1.0, str(f'{model_name} Train'), {'fontsize': 10}, fontproperties = 'monospace')
+    plt.text(0.01, 0.6, str(classification_report(y_train, y_train_preds)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.text(0.01, 0.5, str(f'{model_name} Test'), {'fontsize': 10}, fontproperties = 'monospace')
+    plt.text(0.01, 0.1, str(classification_report(y_test, y_test_preds)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
     plt.axis('off')
-    plt.savefig(os.path.join(RESULTS_DIR, 'classification_report_rf.png'))
-    plt.close()
-
-    # Classification report for Logistic Regression
-    plt.rc('figure', figsize=(5, 5))
-    plt.text(0.01, 1.0, str('Logistic Regression Train'), {'fontsize': 10}, fontproperties = 'monospace')
-    plt.text(0.01, 0.6, str(classification_report(y_train, y_train_preds_lr)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
-    plt.text(0.01, 0.5, str('Logistic Regression Test'), {'fontsize': 10}, fontproperties = 'monospace')
-    plt.text(0.01, 0.1, str(classification_report(y_test, y_test_preds_lr)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
-    plt.axis('off')
-    plt.savefig(os.path.join(RESULTS_DIR, 'classification_report_lr.png'))
+    plt.savefig(output_pth)
     plt.close()
 
 
@@ -297,9 +287,16 @@ def train_models(x_train, x_test, y_train, y_test):
 
     # Save classification reports as images
     classification_report_image(
+        'Random Forest',
         y_train, y_test,
         y_train_preds_rf, y_test_preds_rf,
-        y_train_preds_lr, y_test_preds_lr
+        os.path.join(RESULTS_DIR, 'classification_report_rf.png')
+    )
+    classification_report_image(
+        'Logistic Regression',
+        y_train, y_test,
+        y_train_preds_lr, y_test_preds_lr,
+        os.path.join(RESULTS_DIR, 'classification_report_lr.png')
     )
 
     # Save feature importance plot
