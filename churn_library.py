@@ -15,6 +15,7 @@ import os
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 # DONE: add required imports
+import joblib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -264,6 +265,10 @@ def train_models(x_train, x_test, y_train, y_test):
     # Train models
     cv_rfc.fit(x_train, y_train)
     lrc.fit(x_train, y_train)
+
+    # save best model
+    joblib.dump(cv_rfc.best_estimator_, os.path.join(MODELS_DIR, 'rfc_model.pkl'))
+    joblib.dump(lrc, os.path.join(MODELS_DIR, 'logistic_model.pkl'))
 
     # Calculate predictions
     y_train_preds_rf = cv_rfc.best_estimator_.predict(x_train)
