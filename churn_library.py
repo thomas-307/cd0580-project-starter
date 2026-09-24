@@ -21,7 +21,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, RocCurveDisplay
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
@@ -207,7 +207,7 @@ def feature_importance_plot(model, x_data, output_pth):
     names = [x_data.columns[i] for i in indices]
 
     # Create plot
-    plt.figure(figsize=(20,5))
+    plt.figure(figsize=(20, 14))
 
     # Create plot title
     plt.title("Feature Importance")
@@ -218,6 +218,24 @@ def feature_importance_plot(model, x_data, output_pth):
 
     # Add feature names as x-axis labels
     plt.xticks(range(x_data.shape[1]), names, rotation=45, ha='right')
+    plt.savefig(output_pth)
+    plt.close()
+
+
+def roc_curve_plot(model_rf, model_lr, x_test, y_test, output_pth):
+    """
+    Save ROC curve plot.
+
+    input:
+            model_rf, model_lr, x_test, y_test, output path
+    output:
+            None
+    """
+    lrc_plot = RocCurveDisplay.from_estimator(model_lr, x_test, y_test)
+    rfc_plot = RocCurveDisplay.from_estimator(model_rf, x_test, y_test)
+    plt.figure(figsize=(15, 8))
+    rfc_plot.plot(ax=plt.gca(), name='Random Forest')
+    lrc_plot.plot(ax=plt.gca(), name='Logistic Regression')
     plt.savefig(output_pth)
     plt.close()
 
@@ -306,6 +324,9 @@ def train_models(x_train, x_test, y_train, y_test):
 
     # Save feature importance plot
     feature_importance_plot(cv_rfc, x_train, os.path.join(RESULTS_DIR, 'feature_importance.png'))
+
+    # Save ROC curve plot
+    roc_curve_plot(cv_rfc, lrc, x_test, y_test, os.path.join(RESULTS_DIR, 'roc_curve.png'))
 
 
 if __name__ == "__main__":
