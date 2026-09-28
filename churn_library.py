@@ -283,19 +283,6 @@ def train_models(x_train, x_test, y_train, y_test):
     y_train_preds_lr = lrc.predict(x_train)
     y_test_preds_lr = lrc.predict(x_test)
 
-    # Print scores
-    print('random forest results')
-    print('test results')
-    print(classification_report(y_test, y_test_preds_rf))
-    print('train results')
-    print(classification_report(y_train, y_train_preds_rf))
-
-    print('logistic regression results')
-    print('test results')
-    print(classification_report(y_test, y_test_preds_lr))
-    print('train results')
-    print(classification_report(y_train, y_train_preds_lr))
-
     # Save classification reports as images
     classification_report_image(
         'Random Forest',
@@ -351,3 +338,5 @@ if __name__ == "__main__":
     df = encoder_helper(df, category_columns, "Churn")
     x_train, x_test, y_train, y_test = perform_feature_engineering(df, "Churn", category_columns, quant_columns)
     train_models(x_train, x_test, y_train, y_test)
+
+    print("Churn analysis and model training completed. Check images folder for details.")
