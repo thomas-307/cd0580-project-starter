@@ -4,11 +4,6 @@ Script for testing churn analysis and model training.
 Author: Thomas
 Date created: 2026-09-28
 """
-# TODO:
-# Add a module-level docstring describing:
-# - Purpose of this file
-# - Author
-# - Date created
 
 import logging
 import os
@@ -60,7 +55,6 @@ quant_columns = [
     'Avg_Utilization_Ratio'
 ]
 
-# DONE:
 # configure logging to write INFO and ERROR messages
 # to a .log file inside the ./logs directory
 os.makedirs(LOGS_DIR, exist_ok=True)
@@ -77,12 +71,12 @@ def test_import(import_data):
     try:
         df = import_data(DATA_PATH)
 
-        # TODO: add logging for success
+        # add logging for success
         logging.info("Testing import_data: SUCCESS")
 
     except FileNotFoundError as err:
 
-        # TODO: add logging for file not found
+        # add logging for file not found
         logging.error("Testing import_data: FILE NOT FOUND")
 
         raise err
@@ -93,7 +87,7 @@ def test_import(import_data):
 
     except AssertionError as err:
 
-        # TODO: add logging for failure
+        # add logging for empty dataframe
         logging.error("Testing import_data: THE DATAFRAME IS EMPTY")
 
         raise err
@@ -105,7 +99,6 @@ def test_eda(perform_eda):
         df = cls.import_data(DATA_PATH)
         perform_eda(df)
 
-        # TODO:
         # assert output files exist
         assert os.path.exists(EDA_CHURN_DIST)
         assert os.path.exists(EDA_AGE_DIST)
@@ -113,12 +106,12 @@ def test_eda(perform_eda):
         assert os.path.exists(EDA_TOTAL_TRANS_CT_DIST)
         assert os.path.exists(EDA_CORRELATION)
 
-        # TODO: logging success
+        # logging success
         logging.info("Testing perform_eda: SUCCESS")
 
     except Exception as err:
 
-        # TODO: logging failure
+        # logging failure
         logging.error("Testing perform_eda: FAILURE")
 
         raise err
@@ -129,7 +122,6 @@ def test_encoder_helper(encoder_helper):
     try:
         df = cls.import_data(DATA_PATH)
 
-        # TODO:
         # create response column
         cls.perform_eda(df)  # Assuming perform_eda adds the response column
         response = "Churn"
@@ -142,12 +134,12 @@ def test_encoder_helper(encoder_helper):
             encoded_col = f"{category}_{response}"
             assert encoded_col in df.columns
 
-        # TODO: logging success
+        # logging success
         logging.info("Testing encoder_helper: SUCCESS")
 
     except Exception as err:
 
-        # TODO: logging failure
+        # logging failure
         logging.error("Testing encoder_helper: FAILURE")
 
         raise err
@@ -158,7 +150,6 @@ def test_perform_feature_engineering(perform_feature_engineering):
     try:
         df = cls.import_data(DATA_PATH)
 
-        # TODO:
         # prepare data
         cls.perform_eda(df)
         df = cls.encoder_helper(df, category_columns, "Churn")
@@ -172,12 +163,12 @@ def test_perform_feature_engineering(perform_feature_engineering):
         assert y_train.shape[0] > 0
         assert y_test.shape[0] > 0
 
-        # TODO: logging success
+        # logging success
         logging.info("Testing perform_feature_engineering: SUCCESS")
 
     except Exception as err:
 
-        # TODO: logging failure
+        # logging failure
         logging.error("Testing perform_feature_engineering: FAILURE")
 
         raise err
@@ -188,7 +179,6 @@ def test_train_models(train_models):
     try:
         df = cls.import_data(DATA_PATH)
 
-        # TODO:
         # prepare data
         cls.perform_eda(df)
         df = cls.encoder_helper(df, category_columns, "Churn")
@@ -205,20 +195,18 @@ def test_train_models(train_models):
         assert os.path.exists(RESULTS_FEATURE_IMPORTANCE)
         assert os.path.exists(RESULTS_ROC_CURVE)
 
-        # TODO: logging success
+        # logging success
         logging.info("Testing train_models: SUCCESS")
 
     except Exception as err:
 
-        # TODO: logging failure
+        # logging failure
         logging.error("Testing train_models: FAILURE")
 
         raise err
 
 
 if __name__ == "__main__":
-    # TODO: ensure logs directory exists
-
     test_import(cls.import_data)
     test_eda(cls.perform_eda)
     test_encoder_helper(cls.encoder_helper)

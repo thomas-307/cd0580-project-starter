@@ -4,17 +4,11 @@ Script for performing churn analysis and model training.
 Author: Thomas
 Date created: 2026-09-17
 """
-# DONE:
-# Add a module-level docstring describing:
-# - Purpose of this file
-# - Author
-# - Date created
 
 import os
 
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
-# DONE: add required imports
 import joblib
 import numpy as np
 import pandas as pd
@@ -56,8 +50,6 @@ def import_data(pth):
     output:
             df: pandas dataframe
     """
-    # DONE: implement
-    # Hint:
     df = pd.read_csv(pth)
     return df
 
@@ -73,8 +65,6 @@ def perform_eda(df):
     """
     create_output_directories()
 
-    # DONE: implement
-    # Suggested steps:
     # 1. Create a binary churn column if needed
     df['Churn'] = df['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
 
@@ -106,9 +96,6 @@ def perform_eda(df):
     plt.savefig(os.path.join(EDA_DIR, 'correlation_heatmap.png'))
     plt.close()
 
-    # 4. Save figures into EDA_DIR
-    # Removed redundant saving of figures since they are already saved above
-
 
 def encoder_helper(df, category_lst, response):
     """
@@ -121,7 +108,6 @@ def encoder_helper(df, category_lst, response):
     output:
             df: updated dataframe
     """
-    # DONE: implement
     for category in category_lst:
         # Create a new column for the encoded feature
         new_col_name = f"{category}_{response}"
@@ -145,14 +131,16 @@ def perform_feature_engineering(df, response, category_cols, quant_cols):
     output:
               x_train, x_test, y_train, y_test
     """
-    # DONE: implement
+    # Define training targets
     y = df[response]
 
+    # Define training features
     X = pd.DataFrame()
     encoded_cols = [f"{col}_{response}" for col in category_cols]
     keep_cols = quant_cols + encoded_cols
     X[keep_cols] = df[keep_cols]
 
+    # Split the data into training and testing sets
     x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
     return x_train, x_test, y_train, y_test
@@ -176,8 +164,7 @@ def classification_report_image(
     """
     create_output_directories()
 
-    # DONE: implement
-    # Classification report for Random Forest
+    # Create classification report
     plt.rc('figure', figsize=(5, 5))
     plt.text(0.01, 1.0, str(f'{model_name} Train'), {'fontsize': 10}, fontproperties = 'monospace')
     plt.text(0.01, 0.6, str(classification_report(y_train, y_train_preds)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
@@ -197,7 +184,6 @@ def feature_importance_plot(model, x_data, output_pth):
     output:
             None
     """
-    # DONE: implement
     # Calculate feature importances
     importances = model.best_estimator_.feature_importances_
     # Sort feature importances in descending order
@@ -231,8 +217,11 @@ def roc_curve_plot(model_rf, model_lr, x_test, y_test, output_pth):
     output:
             None
     """
+    # Create ROC curve plots for both models
     lrc_plot = RocCurveDisplay.from_estimator(model_lr, x_test, y_test)
     rfc_plot = RocCurveDisplay.from_estimator(model_rf, x_test, y_test)
+
+    # Create a combined plot
     plt.figure(figsize=(15, 8))
     rfc_plot.plot(ax=plt.gca(), name='Random Forest')
     lrc_plot.plot(ax=plt.gca(), name='Logistic Regression')
@@ -251,7 +240,6 @@ def train_models(x_train, x_test, y_train, y_test):
     """
     create_output_directories()
 
-    # TODO: implement
     # Setup Random Forest Classifier and hyperparameter grid for RandomizedSearchCV
     rfc = RandomForestClassifier(random_state=42)
     
