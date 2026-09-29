@@ -80,7 +80,7 @@ def perform_eda(df):
     plt.close()
 
     plt.figure(figsize=(20, 10))
-    df.Marital_Status.value_counts('normalize').plot(kind='bar')
+    df['Marital_Status'].value_counts('normalize').plot(kind='bar')
     plt.savefig(os.path.join(EDA_DIR, 'marital_status_distribution.png'))
     plt.close()
 
@@ -149,21 +149,25 @@ def perform_feature_engineering(df, response, category_cols, quant_cols):
 
 def classification_report_image(
     model_name,
-    y_train,
-    y_test,
-    y_train_preds,
-    y_test_preds,
+    labels,
+    predictions,
     output_pth
 ):
     """
     Save classification reports as images.
 
     input:
-            predictions and labels
+            model_name,
+            labels (y_train, y_test),
+            predictions (y_train_preds, y_test_preds)
+            output_pth
     output:
             None
     """
     create_output_directories()
+
+    y_train, y_test = labels
+    y_train_preds, y_test_preds = predictions
 
     # Create classification report
     plt.rc('figure', figsize=(5, 5))
@@ -296,14 +300,14 @@ def train_models(x_train, x_test, y_train, y_test):
     # Save classification reports as images
     classification_report_image(
         'Random Forest',
-        y_train, y_test,
-        y_train_preds_rf, y_test_preds_rf,
+        (y_train, y_test),
+        (y_train_preds_rf, y_test_preds_rf),
         os.path.join(RESULTS_DIR, 'classification_report_rf.png')
     )
     classification_report_image(
         'Logistic Regression',
-        y_train, y_test,
-        y_train_preds_lr, y_test_preds_lr,
+        (y_train, y_test),
+        (y_train_preds_lr, y_test_preds_lr),
         os.path.join(RESULTS_DIR, 'classification_report_lr.png')
     )
 
