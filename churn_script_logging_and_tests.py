@@ -18,13 +18,17 @@ EDA_DIR = "./images/eda"
 EDA_CHURN_DIST = os.path.join(EDA_DIR, "churn_distribution.png")
 EDA_AGE_DIST = os.path.join(EDA_DIR, "customer_age_distribution.png")
 EDA_MARITAL_DIST = os.path.join(EDA_DIR, "marital_status_distribution.png")
-EDA_TOTAL_TRANS_CT_DIST = os.path.join(EDA_DIR, "total_trans_ct_distribution.png")
+EDA_TOTAL_TRANS_CT_DIST = os.path.join(
+    EDA_DIR, "total_trans_ct_distribution.png")
 EDA_CORRELATION = os.path.join(EDA_DIR, "correlation_heatmap.png")
 
 RESULTS_DIR = "./images/results"
-RESULTS_CLASSIFICATION_REPORT_RF = os.path.join(RESULTS_DIR, "classification_report_rf.png")
-RESULTS_CLASSIFICATION_REPORT_LR = os.path.join(RESULTS_DIR, "classification_report_lr.png")
-RESULTS_FEATURE_IMPORTANCE = os.path.join(RESULTS_DIR, "feature_importance.png")
+RESULTS_CLASSIFICATION_REPORT_RF = os.path.join(
+    RESULTS_DIR, "classification_report_rf.png")
+RESULTS_CLASSIFICATION_REPORT_LR = os.path.join(
+    RESULTS_DIR, "classification_report_lr.png")
+RESULTS_FEATURE_IMPORTANCE = os.path.join(
+    RESULTS_DIR, "feature_importance.png")
 RESULTS_ROC_CURVE = os.path.join(RESULTS_DIR, "roc_curve.png")
 
 MODELS_DIR = "./models"
@@ -40,18 +44,18 @@ category_columns = [
 ]
 quant_columns = [
     'Customer_Age',
-    'Dependent_count', 
+    'Dependent_count',
     'Months_on_book',
-    'Total_Relationship_Count', 
+    'Total_Relationship_Count',
     'Months_Inactive_12_mon',
-    'Contacts_Count_12_mon', 
-    'Credit_Limit', 
+    'Contacts_Count_12_mon',
+    'Credit_Limit',
     'Total_Revolving_Bal',
-    'Avg_Open_To_Buy', 
-    'Total_Amt_Chng_Q4_Q1', 
+    'Avg_Open_To_Buy',
+    'Total_Amt_Chng_Q4_Q1',
     'Total_Trans_Amt',
-    'Total_Trans_Ct', 
-    'Total_Ct_Chng_Q4_Q1', 
+    'Total_Trans_Ct',
+    'Total_Ct_Chng_Q4_Q1',
     'Avg_Utilization_Ratio'
 ]
 
@@ -155,11 +159,12 @@ def test_perform_feature_engineering(perform_feature_engineering):
         df = cls.encoder_helper(df, category_columns, "Churn")
 
         # call function
-        X_train, X_test, y_train, y_test = perform_feature_engineering(df, "Churn", category_columns, quant_columns)
+        x_train, x_test, y_train, y_test = perform_feature_engineering(
+            df, "Churn", category_columns, quant_columns)
 
         # assert outputs
-        assert X_train.shape[0] > 0
-        assert X_test.shape[0] > 0
+        assert x_train.shape[0] > 0
+        assert x_test.shape[0] > 0
         assert y_train.shape[0] > 0
         assert y_test.shape[0] > 0
 
@@ -182,10 +187,11 @@ def test_train_models(train_models):
         # prepare data
         cls.perform_eda(df)
         df = cls.encoder_helper(df, category_columns, "Churn")
-        X_train, X_test, y_train, y_test = cls.perform_feature_engineering(df, "Churn", category_columns, quant_columns)
+        x_train, x_test, y_train, y_test = cls.perform_feature_engineering(
+            df, "Churn", category_columns, quant_columns)
 
         # call train_models
-        train_models(X_train, X_test, y_train, y_test)
+        train_models(x_train, x_test, y_train, y_test)
 
         # assert model files + images exist
         assert os.path.exists(MODEL_RFC)

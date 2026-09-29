@@ -6,20 +6,19 @@ Date created: 2026-09-17
 """
 
 import os
-
-os.environ["QT_QPA_PLATFORM"] = "offscreen"
-
 import joblib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.model_selection import train_test_split, RandomizedSearchCV
-from sklearn.metrics import classification_report, RocCurveDisplay
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, RocCurveDisplay
+from sklearn.model_selection import train_test_split, RandomizedSearchCV
+
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 EDA_DIR = "./images/eda"
 RESULTS_DIR = "./images/results"
@@ -66,25 +65,26 @@ def perform_eda(df):
     create_output_directories()
 
     # 1. Create a binary churn column if needed
-    df['Churn'] = df['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
+    df['Churn'] = df['Attrition_Flag'].apply(
+        lambda val: 0 if val == "Existing Customer" else 1)
 
     # 2. Plot key distributions
-    plt.figure(figsize=(20,10)) 
+    plt.figure(figsize=(20, 10))
     df['Churn'].hist()
     plt.savefig(os.path.join(EDA_DIR, 'churn_distribution.png'))
     plt.close()
 
-    plt.figure(figsize=(20,10)) 
+    plt.figure(figsize=(20, 10))
     df['Customer_Age'].hist()
     plt.savefig(os.path.join(EDA_DIR, 'customer_age_distribution.png'))
     plt.close()
 
-    plt.figure(figsize=(20,10)) 
+    plt.figure(figsize=(20, 10))
     df.Marital_Status.value_counts('normalize').plot(kind='bar')
     plt.savefig(os.path.join(EDA_DIR, 'marital_status_distribution.png'))
     plt.close()
 
-    plt.figure(figsize=(20,10)) 
+    plt.figure(figsize=(20, 10))
     sns.histplot(df['Total_Trans_Ct'], stat='density', kde=True)
     plt.savefig(os.path.join(EDA_DIR, 'total_trans_ct_distribution.png'))
     plt.close()
@@ -135,13 +135,14 @@ def perform_feature_engineering(df, response, category_cols, quant_cols):
     y = df[response]
 
     # Define training features
-    X = pd.DataFrame()
+    x = pd.DataFrame()
     encoded_cols = [f"{col}_{response}" for col in category_cols]
     keep_cols = quant_cols + encoded_cols
-    X[keep_cols] = df[keep_cols]
+    x[keep_cols] = df[keep_cols]
 
     # Split the data into training and testing sets
-    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(
+        x, y, test_size=0.3, random_state=42)
 
     return x_train, x_test, y_train, y_test
 
@@ -166,10 +167,14 @@ def classification_report_image(
 
     # Create classification report
     plt.rc('figure', figsize=(5, 5))
-    plt.text(0.01, 1.0, str(f'{model_name} Train'), {'fontsize': 10}, fontproperties = 'monospace')
-    plt.text(0.01, 0.6, str(classification_report(y_train, y_train_preds)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
-    plt.text(0.01, 0.5, str(f'{model_name} Test'), {'fontsize': 10}, fontproperties = 'monospace')
-    plt.text(0.01, 0.1, str(classification_report(y_test, y_test_preds)), {'fontsize': 10}, fontproperties = 'monospace') # approach improved by OP -> monospace!
+    plt.text(0.01, 1.0, str(f'{model_name} Train'), {
+             'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.6, str(classification_report(y_train, y_train_preds)), {
+             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
+    plt.text(0.01, 0.5, str(f'{model_name} Test'), {
+             'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.1, str(classification_report(y_test, y_test_preds)), {
+             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
     plt.axis('off')
     plt.savefig(output_pth)
     plt.close()
@@ -240,9 +245,10 @@ def train_models(x_train, x_test, y_train, y_test):
     """
     create_output_directories()
 
-    # Setup Random Forest Classifier and hyperparameter grid for RandomizedSearchCV
+    # Setup Random Forest Classifier and hyperparameter grid for
+    # RandomizedSearchCV
     rfc = RandomForestClassifier(random_state=42)
-    
+
     param_dist = {
         'n_estimators': [200, 300],
         'max_features': ['sqrt'],
@@ -273,7 +279,11 @@ def train_models(x_train, x_test, y_train, y_test):
     lrc.fit(x_train, y_train)
 
     # save best model
-    joblib.dump(cv_rfc.best_estimator_, os.path.join(MODELS_DIR, 'rfc_model.pkl'))
+    joblib.dump(
+        cv_rfc.best_estimator_,
+        os.path.join(
+            MODELS_DIR,
+            'rfc_model.pkl'))
     joblib.dump(lrc, os.path.join(MODELS_DIR, 'logistic_model.pkl'))
 
     # Calculate predictions
@@ -298,10 +308,19 @@ def train_models(x_train, x_test, y_train, y_test):
     )
 
     # Save feature importance plot
-    feature_importance_plot(cv_rfc, x_train, os.path.join(RESULTS_DIR, 'feature_importance.png'))
+    feature_importance_plot(
+        cv_rfc, x_train, os.path.join(
+            RESULTS_DIR, 'feature_importance.png'))
 
     # Save ROC curve plot
-    roc_curve_plot(cv_rfc, lrc, x_test, y_test, os.path.join(RESULTS_DIR, 'roc_curve.png'))
+    roc_curve_plot(
+        cv_rfc,
+        lrc,
+        x_test,
+        y_test,
+        os.path.join(
+            RESULTS_DIR,
+            'roc_curve.png'))
 
 
 if __name__ == "__main__":
@@ -320,23 +339,24 @@ if __name__ == "__main__":
     ]
     quant_columns = [
         'Customer_Age',
-        'Dependent_count', 
+        'Dependent_count',
         'Months_on_book',
-        'Total_Relationship_Count', 
+        'Total_Relationship_Count',
         'Months_Inactive_12_mon',
-        'Contacts_Count_12_mon', 
-        'Credit_Limit', 
+        'Contacts_Count_12_mon',
+        'Credit_Limit',
         'Total_Revolving_Bal',
-        'Avg_Open_To_Buy', 
-        'Total_Amt_Chng_Q4_Q1', 
+        'Avg_Open_To_Buy',
+        'Total_Amt_Chng_Q4_Q1',
         'Total_Trans_Amt',
-        'Total_Trans_Ct', 
-        'Total_Ct_Chng_Q4_Q1', 
+        'Total_Trans_Ct',
+        'Total_Ct_Chng_Q4_Q1',
         'Avg_Utilization_Ratio'
     ]
 
     df = encoder_helper(df, category_columns, "Churn")
-    x_train, x_test, y_train, y_test = perform_feature_engineering(df, "Churn", category_columns, quant_columns)
+    x_train, x_test, y_train, y_test = perform_feature_engineering(
+        df, "Churn", category_columns, quant_columns)
     train_models(x_train, x_test, y_train, y_test)
 
     print("Churn analysis and model training completed. Check images folder for details.")
