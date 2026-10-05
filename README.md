@@ -6,38 +6,39 @@
 
 ## Project Description
 
-> TODO:
-> Describe the purpose of this project in your own words.
->
-> You should include:
-> - What problem this project solves
-> - What the machine learning pipeline does
-> - What models are used
+This project performs a churn analysis based on bank data and trains two models to predict customer churns.
+The script performs the following tasks:
+- EDA analysis
+- Train Test split
+- Training of a Random Forest model
+- Training of a Logistic Regression model
+- Generation of classification reports for the trained models
 
 ---
 
 ## Files and Data Description
 
-> TODO:
-> Describe the main files and dataset used in this project.
+The project uses three main files and a data file.
 
 ### Main Files
 
 - `churn_library.py`  
-  > TODO: Explain what this file does
+  Main script to perform churn analyis and model training.
 
 - `churn_script_logging_and_tests.py`  
-  > TODO: Explain what this file does
+  Script to run tests and log results for `churn_library.py`.
 
 - `churn_notebook.ipynb`  
-  > TODO: Explain the role of this notebook
+  Basis for the implementation of `churn_library.py`.
 
 ---
 
 ### Data
 
 - `data/bank_data.csv`  
-  > TODO: Describe the dataset (features, target, etc.)
+  Bank data for churn analysis
+  - target: churn (derived from attrition flag)
+  - features: e.g. total trans amount, marital status, income group
 
 ---
 
@@ -60,8 +61,11 @@ After running the project, outputs will be saved to:
 python churn_library.py
 ```
 
-> TODO:
-> Briefly describe what happens when this script runs
+- Runs EDA analysis and stores images
+- Performs train test split
+- Trains Random Forest and Logistic Regression model
+- Stores best models
+- Generates and stores model result reports
 
 ---
 
@@ -71,25 +75,28 @@ python churn_library.py
 python churn_script_logging_and_tests.py
 ```
 
-> TODO:
-> Explain what the test script does and what is logged
+- Runs tests for `churn_library.py`.
+- Test results are stored in a log file.
 
 ---
 
 ## Expected Outputs
-
-> TODO:
-> List and describe the expected outputs of the project
-
-Minimum expected outputs:
 
 - Models:
   - `models/rfc_model.pkl`
   - `models/logistic_model.pkl`
 
 - Images:
-  - EDA plots in `images/eda/`
-  - Model evaluation plots in `images/results/`
+  - `images/eda/churn_distribution.png`
+  - `images/eda/correlation_heatmap.png`
+  - `images/eda/customer_age_distribution.png`
+  - `images/eda/marital_status_distribution.png`
+  - `images/eda/total_trans_ct_distribution.png`
+
+  - `images/results/classification_report_lr.png`
+  - `images/results/classification_report_rf.png`
+  - `images/results/feature_importance.png`
+  - `images/results/rov_curve.png`
 
 - Logs:
   - `logs/churn_library.log`
@@ -98,10 +105,4 @@ Minimum expected outputs:
 
 ## Notes
 
-> TODO:
-> Add any additional notes or assumptions about your implementation
-
-Examples:
-- How logging is handled
-- Any assumptions about the dataset
-- Any limitations of the model
+- Target feature churn is derived during EDA analysis
